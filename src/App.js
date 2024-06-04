@@ -1,7 +1,9 @@
 import logo from './logo.svg';
 import './App.css';
 import Todo from './Todo';
+import AddTodo from './AddTodo';
 import React, {useState} from "react";
+import {Container, List, Paper} from "@mui/material";
 
 function App() {
   const [items, setItems] = useState(
@@ -17,8 +19,28 @@ function App() {
     },]
   );
 
+  const addItem = (item) => {
+    item.id = "ID-" + item.title.length; //key를 위한 id .... 왜 item.length를 읽어오지 못할까?,,?Undifiened로 나온다.
+    item.done = false;
+    /*배열의 값이 바뀌어도 배열의 레퍼런스는 바뀌지 않는다. 리엑트는 레퍼런스를 기준으로 재렌더링 함으로써 변화한 상황을 보여주기 때문에
+      배열의 레퍼런스를 바꿔줘야 실시간으로 변화한 todoItems를 볼 수 있다.*/
+    setItems([...items, item]);
+    items.push(item) 
+    /*items.push(item): 이 코드가 없으면 line29에서 가장 최근 추가된 item을 제외한 items를 출력한다. 
+    그런데 함수 바깥의 console.log에서는 왜 추가가 된 items를 출력하지....?
+    useState가 queue 자료형이라서 그렇다는데....흠..*/
+    console.log("items : ", items);
+  }
+   console.log(items);
+
   let todoItems = 
-  items.length > 0 && items.map((item => <Todo item={item} key={item.id} />))
+  items.length > 0 && (
+    <Paper style = {{margin: 16}}>
+      <List>
+        {items.map((item => <Todo item={item} key={item.id} />))}
+      </List>
+    </Paper>
+  )
   /* todoItems의 값은 false이거나 요소 배열이다. Element[]
     useState()로 초기화한 items 배열의 길이가 0 이하이면 false가 저장된다.
     items.map()은 items 배열의 요소를 순차적으로 돌면서 map()의 매개변수로 전달된 함수를 실행한다.
@@ -33,8 +55,10 @@ function App() {
 
   return (  
     <div className="App">
-      {todoItems}
-        
+      <Container maxWidth="md">
+        <AddTodo addItem={addItem}/>
+        <div className='TodoList'>{todoItems}</div>
+      </Container>
     </div>
   );
   /*
