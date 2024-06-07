@@ -7,13 +7,14 @@ const AddTodo = (props) => {
     const addItem = props.addItem;
 
     //onButtonClick 함수 작성
-    const onButtonClick = () => {
+    const onButtonClick = (event) => {
         addItem(item); //TextField의 onInputChange에 의해 업데이트된 item을 addItem에 넘겨준다.
         setItem({title: ""});
+        
     }
 
-    const enterKeyEventHandler = (e) => {
-        if (e.key == "Enter"){
+    const enterKeyEventHandler = (e: React.KeyboardEvent) => {
+        if (e.key === "Enter" && e.nativeEvent.isComposing === false){
             onButtonClick();
         }
     }
@@ -28,6 +29,7 @@ const AddTodo = (props) => {
     const onInputChange = (e) => {
         setItem({title: e.target.value});
         console.log(item);
+        
     }
 
     //onInputChange 함수 TextField에 연결
@@ -35,13 +37,20 @@ const AddTodo = (props) => {
         <Grid container style={{marginTop: 20}}>
             <Grid xs={11} md={11} item style={{paddingRight: 16}}>
                 <TextField placeholder="Add Todo Here" 
-                           fullWidth onChange={onInputChange} 
-                           onKeyUp={enterKeyEventHandler}
+                           fullWidth 
+                           onChange={onInputChange} 
+                           onKeyDown={enterKeyEventHandler}
                            value={item.title}
                 />
             </Grid>
             <Grid xs={1} md={1} item>
-                <Button fullWidth style={{height: '100%'}} color="secondary" variant="outlined" onClick={onButtonClick}>+</Button>
+                <Button fullWidth 
+                style={{height: '100%'}} 
+                color="secondary" 
+                variant="outlined" 
+                onClick={onButtonClick}>
+                    +
+                </Button>
             </Grid>
         </Grid>
     );
