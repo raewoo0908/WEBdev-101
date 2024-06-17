@@ -28,7 +28,7 @@ const AddTodo = (props) => {
      Event 오브젝트의 target.value에는 현재 화면의 인풋필드에 입력된 글자들이 담겨있다. */
     const onInputChange = (e) => {
         setItem({title: e.target.value});
-        console.log(item);
+        console.log(e.target.value);
         
     }
 

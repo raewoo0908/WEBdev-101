@@ -2,21 +2,28 @@ import logo from './logo.svg';
 import './App.css';
 import Todo from './Todo';
 import AddTodo from './AddTodo';
+import loadingPage from "./Loading";
 import React, {useEffect, useState} from "react";
-import {Container, List, Paper} from "@mui/material";
-import {call} from "./service/ApiService";
+import {Container, List, Paper, Grid, Button, AppBar, Toolbar, Typography} from "@mui/material";
+import {call, signin, signout} from "./service/ApiService";
+
 
 function App() {
   const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     call("/todo", "GET", null)
-    .then((response) => setItems(response.data));
+    .then((response) => {
+      setItems(response.data); 
+      setLoading(false);
+    });
   }, []);
 
   const addItem = (item) => {
     call("/todo", "POST", item)
     .then((response) => setItems(response.data));
+    
     /*item.id = "ID-" + item.title.length; 
     item.done = false;*/
     /*배열의 값이 바뀌어도 배열의 레퍼런스는 바뀌지 않는다. 리엑트는 레퍼런스를 기준으로 재렌더링 함으로써 변화한 상황을 보여주기 때문에
@@ -63,16 +70,40 @@ function App() {
     결과적으로 todoItems에는 Todo 컴포넌트로 구성된 배열이 저장된다.
     */
 
-  return (  
-    <div className="App">
-      <Container maxWidth="md">
-        <AddTodo addItem={addItem}/>
-        <div className='TodoList'>
-          {todoItems}
-          </div>
+  let navigationBar = (
+    <AppBar position = "static">
+      <Toolbar>
+        <Grid justifyContent = "space-between" container>
+          <Grid item>
+            <Typography variant = "h6">오늘의 할 일</Typography>
+          </Grid>
+          <Grid item>
+            <Button color="inherit" raised="true" onClick = {signout}>로그아웃</Button>
+          </Grid>
+        </Grid>
+      </Toolbar>
+    </AppBar>
+  )
+
+  //로딩중이 아닐 때 렌더링 할 부분
+  let todoListPage = (
+    <div>
+      {navigationBar} {/*네비게이션 바 렌더링*/}
+      <Container maxWidth = "md">
+        <AddTodo addItem = {addItem} />
+        <div className = "TodiList">{todoItems}</div>
       </Container>
     </div>
   );
+
+  let content = loadingPage;
+
+  if (!loading){
+    content = todoListPage;
+  }
+
+  return <div className = "App">{content}</div>;
+
   /*
             <div className="App">
               <Todo item = {item} />
